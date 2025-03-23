@@ -14,16 +14,19 @@ This is a simple yet powerful OS monitoring tool that gives real-time insights i
 6.Power consumption estimation – Get an idea of how much power your system is consuming.
 
 :-How to Set Up
+
 1️.Clone the Repository
 First, grab a copy of the project by running:
 git clone https://github.com/your-username/AIPoweredOSMonitor.git
-cd AIPoweredOSMonitor
+then on terminal write command : cd AIPoweredOSMonitor
 
 2️.Install Dependencies
+
 Make sure Python is installed, then install the required libraries:
 pip install flask psutil
 
 3️.Run the Application
+
 Launch the system monitor with:
 python ai_os_monitor.py
 Then open your browser and go to http://127.0.0.1:5000/ to see it in action! 🚀
