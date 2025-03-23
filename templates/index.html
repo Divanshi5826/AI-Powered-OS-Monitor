@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered OS Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>AI-Powered OS Monitor</h1>
+
+    <div class="container">
+        <!-- Without AI Section -->
+        <div class="section">
+            <h2>Without AI</h2>
+            <div class="card">
+                <p>CPU Usage: <span id="cpu"></span>%</p>
+                <p>Memory Usage: <span id="memory"></span>%</p>
+                <p>Disk Usage: <span id="disk"></span>%</p>
+            </div>
+            <canvas id="usageChart"></canvas>
+        </div>
+
+        <!-- With AI Section -->
+        <div class="section">
+            <h2>With AI</h2>
+            <div class="card">
+                <p>Predicted CPU Usage: <span id="ai_cpu"></span>%</p>
+                <p>Predicted Memory Usage: <span id="ai_memory"></span>%</p>
+                <p>Predicted Disk Usage: <span id="ai_disk"></span>%</p>
+                <p id="anomaly-alert"></p>
+                <p id="optimization-suggestion"></p>
+            </div>
+            <canvas id="aiChart"></canvas>  <!-- AI Graph -->
+        </div>
+    </div>
+
+    <!-- 🆕 New Features Below -->
+
+    <div class="container">
+        <!-- Heavy Resource Usage Processes -->
+        <div class="section">
+            <h2>Heavy Resource Usage Processes</h2>
+            <div class="card">
+                <p><strong>Process Consuming Most Resources:</strong></p>
+                <p id="heavy-process">Fetching...</p>
+            </div>
+        </div>
+
+        <!-- Energy Efficiency Score -->
+        <div class="section">
+            <h2>Energy Efficiency Score</h2>
+            <div class="card">
+                <p><strong>Efficiency Score:</strong> <span id="energy-score">Calculating...</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Network Usage Monitoring -->
+        <div class="section">
+            <h2>Network Usage</h2>
+            <div class="card">
+                <p>Upload Speed: <span id="upload-speed"></span> Mbps</p>
+                <p>Download Speed: <span id="download-speed"></span> Mbps</p>
+            </div>
+            <canvas id="networkChart"></canvas>
+        </div>
+
+        <!-- System Overload Prediction -->
+        <div class="section">
+            <h2>System Overload Prediction</h2>
+            <div class="card">
+                <p id="overload-prediction">Predicting...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
