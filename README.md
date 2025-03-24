@@ -1,4 +1,4 @@
-AI-Powered OS Monitor
+#AI-Powered OS Monitor
 This is a simple yet powerful OS monitoring tool that gives real-time insights into system performance. With AI-powered predictions, it helps you track CPU, memory, disk, and network usage while also detecting potential system issues.
 :- Features
 1.Live system monitoring – See real-time CPU, memory, disk, and network usage.
