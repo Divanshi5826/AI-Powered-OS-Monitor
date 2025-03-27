@@ -2,7 +2,7 @@ const ctx = document.getElementById("usageChart").getContext("2d");
 const aiCtx = document.getElementById("aiChart").getContext("2d");
 const networkCtx = document.getElementById("networkChart").getContext("2d");
 
-// Real-Time System Performance Chart (Without AI)
+// --- WITHOUT AI CHART ---
 const chart = new Chart(ctx, {
     type: "line",
     data: {
@@ -15,11 +15,13 @@ const chart = new Chart(ctx, {
     },
     options: {
         responsive: true,
-        scales: { y: { min: 0, max: 100 } }
+        scales: {
+            y: { min: 0, max: 100 }
+        }
     }
 });
 
-// AI-Predicted System Performance Chart (With AI)
+// --- WITH AI CHART ---
 const aiChart = new Chart(aiCtx, {
     type: "line",
     data: {
@@ -32,11 +34,13 @@ const aiChart = new Chart(aiCtx, {
     },
     options: {
         responsive: true,
-        scales: { y: { min: 0, max: 100 } }
+        scales: {
+            y: { min: 0, max: 100 }
+        }
     }
 });
 
-// Network Usage Chart
+// --- NETWORK USAGE CHART ---
 const networkChart = new Chart(networkCtx, {
     type: "line",
     data: {
@@ -48,7 +52,9 @@ const networkChart = new Chart(networkCtx, {
     },
     options: {
         responsive: true,
-        scales: { y: { min: 0 } }
+        scales: {
+            y: { min: 0 }
+        }
     }
 });
 
@@ -57,6 +63,7 @@ function fetchStats() {
     fetch("/stats")
         .then(response => response.json())
         .then(data => {
+            // Update DOM for "Without AI" stats
             document.getElementById("cpu").innerText = data.cpu;
             document.getElementById("memory").innerText = data.memory;
             document.getElementById("disk").innerText = data.disk;
@@ -70,11 +77,12 @@ function fetchStats() {
             chart.data.datasets[1].data.push(data.memory);
             chart.data.datasets[2].data.push(data.disk);
 
+            // Update network usage chart
             networkChart.data.labels.push(timeLabel);
             networkChart.data.datasets[0].data.push(data.upload_speed);
             networkChart.data.datasets[1].data.push(data.download_speed);
 
-            // Maintain 20 data points in the chart
+            // Keep chart data to 20 points max
             if (chart.data.labels.length > 20) {
                 chart.data.labels.shift();
                 chart.data.datasets.forEach(dataset => dataset.data.shift());
@@ -95,6 +103,7 @@ function fetchAIStats() {
     fetch("/ai-stats")
         .then(response => response.json())
         .then(data => {
+            // Update DOM for "With AI" stats
             document.getElementById("ai_cpu").innerText = data.predicted_cpu;
             document.getElementById("ai_memory").innerText = data.predicted_memory;
             document.getElementById("ai_disk").innerText = data.predicted_disk;
@@ -104,13 +113,14 @@ function fetchAIStats() {
             document.getElementById("energy-score").innerText = `🔋 Energy Score: ${data.energy_efficiency_score}/10`;
             document.getElementById("overload-prediction").innerText = data.overload_prediction;
 
-            // Update AI-predicted chart
+            // Update AI chart
             const timeLabel = new Date().toLocaleTimeString();
             aiChart.data.labels.push(timeLabel);
             aiChart.data.datasets[0].data.push(data.predicted_cpu);
             aiChart.data.datasets[1].data.push(data.predicted_memory);
             aiChart.data.datasets[2].data.push(data.predicted_disk);
 
+            // Keep AI chart data to 20 points max
             if (aiChart.data.labels.length > 20) {
                 aiChart.data.labels.shift();
                 aiChart.data.datasets.forEach(dataset => dataset.data.shift());
@@ -121,10 +131,10 @@ function fetchAIStats() {
         .catch(error => console.error("Error fetching AI stats:", error));
 }
 
-// Fetch data every 2 seconds
+// Update both sets of data every 2 seconds
 setInterval(fetchStats, 2000);
 setInterval(fetchAIStats, 2000);
 
-// Initial fetch
+// Initial fetch on page load
 fetchStats();
 fetchAIStats();

@@ -5,33 +5,84 @@ import time
 
 app = Flask(__name__)
 
-# Route for normal system stats (Without AI)
+# Store previous network stats for proper speed calculation
+previous_net_io = psutil.net_io_counters()
+previous_time = time.time()
+
+def get_network_speed():
+    """
+    Returns upload_speed and download_speed in Mbps.
+    Uses a global 'previous_net_io' and 'previous_time' to calculate deltas.
+    """
+    global previous_net_io, previous_time
+    current_net_io = psutil.net_io_counters()
+    current_time = time.time()
+
+    time_diff = current_time - previous_time
+    if time_diff == 0:
+        return {"upload_speed": 0.0, "download_speed": 0.0}
+
+    # Convert bytes to MBps and then label it as Mbps for simplicity
+    upload_speed = (current_net_io.bytes_sent - previous_net_io.bytes_sent) / time_diff / 1024 / 1024
+    download_speed = (current_net_io.bytes_recv - previous_net_io.bytes_recv) / time_diff / 1024 / 1024
+
+    previous_net_io = current_net_io
+    previous_time = current_time
+
+    return {
+        "upload_speed": round(upload_speed, 2),
+        "download_speed": round(download_speed, 2)
+    }
+
+def get_heavy_processes(threshold=20):
+    """
+    Identifies processes consuming high CPU while **ignoring System Idle Process (PID: 0)**.
+    """
+    heavy_process = None
+    max_cpu = 0
+
+    for proc in psutil.process_iter(attrs=['pid', 'name', 'cpu_percent']):
+        try:
+            pid = proc.info['pid']
+            cpu_usage = min(proc.info['cpu_percent'], 100)  # Ensure no process exceeds 100%
+
+            if pid != 0 and cpu_usage > threshold:  # Ignore System Idle Process
+                if cpu_usage > max_cpu:
+                    max_cpu = cpu_usage
+                    heavy_process = proc.info
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue  # Ignore inaccessible processes
+
+    if heavy_process:
+        return (f"🚀 {heavy_process['name']} (PID: {heavy_process['pid']}) "
+                f"is using high CPU ({max_cpu}%). Consider closing it.")
+    return None
+
 @app.route('/stats')
 def get_stats():
+    network_speeds = get_network_speed()
     return jsonify({
         "cpu": psutil.cpu_percent(),
         "memory": psutil.virtual_memory().percent,
         "disk": psutil.disk_usage('/').percent,
-        "network": psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv  # Total network usage
+        "upload_speed": network_speeds["upload_speed"],
+        "download_speed": network_speeds["download_speed"]
     })
 
-# Route for AI-powered stats (With AI)
 @app.route('/ai-stats')
 def get_ai_stats():
     cpu = psutil.cpu_percent()
     memory = psutil.virtual_memory().percent
     disk = psutil.disk_usage('/').percent
-    network = psutil.net_io_counters().bytes_sent + psutil.net_io_counters().bytes_recv  # Total network usage
+    network_speeds = get_network_speed()
 
-    # AI-Based Predictions (Mock Model)
-    predicted_cpu = max(0, min(100, cpu + random.uniform(-3, 3)))
-    predicted_memory = max(0, min(100, memory + random.uniform(-3, 3)))
-    predicted_disk = max(0, min(100, disk + random.uniform(-3, 3)))
+    # AI-Based Predictions (Mock)
+    predicted_cpu = round(max(0, min(100, cpu + random.uniform(-3, 3))), 1)
+    predicted_memory = round(max(0, min(100, memory + random.uniform(-3, 3))), 1)
+    predicted_disk = round(max(0, min(100, disk + random.uniform(-3, 3))), 1)
 
     # Anomaly Detection
-    anomaly_alert = None
-    if cpu > 90 or memory > 90 or disk > 90:
-        anomaly_alert = "⚠ High resource usage detected!"
+    anomaly_alert = "⚠ High resource usage detected!" if (cpu > 90 or memory > 90 or disk > 90) else None
 
     # Optimization Suggestions
     optimization_suggestion = None
@@ -40,13 +91,8 @@ def get_ai_stats():
     elif disk > 80:
         optimization_suggestion = "🗑 Consider cleaning unnecessary files to free disk space."
 
-    # AI-Based Heavy Process Detection
-    processes = [(p.info["pid"], p.info["name"], p.info["cpu_percent"]) for p in psutil.process_iter(["pid", "name", "cpu_percent"])]
-    heavy_process = max(processes, key=lambda x: x[2], default=None)
-
-    heavy_process_info = None
-    if heavy_process and heavy_process[2] > 20:
-        heavy_process_info = f"🚀 {heavy_process[1]} (PID: {heavy_process[0]}) is using high CPU ({heavy_process[2]}%). Consider closing it."
+    # AI-Based Heavy Process Detection (Ignoring System Idle Process)
+    heavy_process_info = get_heavy_processes()
 
     # AI-Based Energy Consumption Estimation
     energy_score = round(random.uniform(1, 10), 1)
@@ -59,14 +105,15 @@ def get_ai_stats():
         overload_prediction = "✅ System is running optimally."
 
     return jsonify({
-        "predicted_cpu": round(predicted_cpu, 1),
-        "predicted_memory": round(predicted_memory, 1),
-        "predicted_disk": round(predicted_disk, 1),
+        "predicted_cpu": predicted_cpu,
+        "predicted_memory": predicted_memory,
+        "predicted_disk": predicted_disk,
         "anomaly_alert": anomaly_alert,
         "optimization_suggestion": optimization_suggestion,
         "heavy_process_info": heavy_process_info,
         "energy_efficiency_score": energy_score,
-        "network_usage": network,
+        "upload_speed": network_speeds["upload_speed"],
+        "download_speed": network_speeds["download_speed"],
         "overload_prediction": overload_prediction
     })
 
