@@ -9,9 +9,7 @@
 </head>
 <body>
     <h1>AI-Powered OS Monitor</h1>
-
     <div class="container">
-        <!-- Without AI Section -->
         <div class="section">
             <h2>Without AI</h2>
             <div class="card">
@@ -21,8 +19,6 @@
             </div>
             <canvas id="usageChart"></canvas>
         </div>
-
-        <!-- With AI Section -->
         <div class="section">
             <h2>With AI</h2>
             <div class="card">
@@ -32,14 +28,10 @@
                 <p id="anomaly-alert"></p>
                 <p id="optimization-suggestion"></p>
             </div>
-            <canvas id="aiChart"></canvas>  <!-- AI Graph -->
+            <canvas id="aiChart"></canvas>  
         </div>
     </div>
-
-    <!-- 🆕 New Features Below -->
-
     <div class="container">
-        <!-- Heavy Resource Usage Processes -->
         <div class="section">
             <h2>Heavy Resource Usage Processes</h2>
             <div class="card">
@@ -47,8 +39,6 @@
                 <p id="heavy-process">Fetching...</p>
             </div>
         </div>
-
-        <!-- Energy Efficiency Score -->
         <div class="section">
             <h2>Energy Efficiency Score</h2>
             <div class="card">
@@ -56,9 +46,7 @@
             </div>
         </div>
     </div>
-
     <div class="container">
-        <!-- Network Usage Monitoring -->
         <div class="section">
             <h2>Network Usage</h2>
             <div class="card">
@@ -67,8 +55,6 @@
             </div>
             <canvas id="networkChart"></canvas>
         </div>
-
-        <!-- System Overload Prediction -->
         <div class="section">
             <h2>System Overload Prediction</h2>
             <div class="card">
@@ -76,7 +62,6 @@
             </div>
         </div>
     </div>
-
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

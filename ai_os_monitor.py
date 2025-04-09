@@ -64,7 +64,10 @@ def get_ai_stats():
     elif disk > 80:
         optimization_suggestion = "🗑 Consider cleaning unnecessary files to free disk space."
     heavy_process_info = get_heavy_processes()
-    energy_score = round(random.uniform(1, 10), 1)
+    # energy_score = round(random.uniform(1, 10), 1)
+    energy_score = (100 - cpu) * 0.4 + (100 - memory) * 0.3 + (100 - disk) * 0.3
+    energy_score = round(energy_score / 10, 1)
+
     if cpu > 80 or memory > 80:
         overload_time = round(random.uniform(5, 30), 1)  # Predict overload in next 5-30 minutes
         overload_prediction = f"⚡ System may overload in {overload_time} minutes if usage continues."
